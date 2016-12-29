@@ -3,7 +3,7 @@ layout: post
 title:  "用jekyll在github上搭建博客"
 date:   2016-12-29 15:15:47
 categories: [normal]
-excerpt: 这两天捣鼓的这个github page ，然后安装jekyll来搭建项目。
+excerpt: "这两天捣鼓的这个github page ，然后安装jekyll来搭建项目。"
 tags:
   - jekyll
   - github
@@ -14,12 +14,12 @@ tags:
 安装jekyll其实很简单，官网看一下就，几个命令就解决了。先要安装好Ruby 和 RubyGems（包管理工具）
 
 然后
-```
-$ gem install jekyll
-$ jekyll new myblog
-$ cd myblog
-$ jekyll build
-$ jekyll serve
+```  cmd
+$ gem install jekyll		
+$ jekyll new myblog		
+$ cd myblog		
+$ jekyll build			
+$ jekyll serve		
 ```
 
 代码直接推到 github 上，配置githubpage就可以了。当然githubpage配置也简单，主要保证项目名要用 用户名+github.io 例如（wlabee.github.io）。然后配置要展示的分支，还有一点就是现在访问的地址是https的！
