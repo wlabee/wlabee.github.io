@@ -20,11 +20,16 @@ tags:
 
 鸟哥文章中写的。
 [http://www.laruence.com/2008/06/18/221.html](http://www.laruence.com/2008/06/18/221.html)
-```
-1.Scanning(Lexing) ,将PHP代码转换为语言片段(Tokens)
-2.Parsing, 将Tokens转换成简单而有意义的表达式
-3.Compilation, 将表达式编译成Opocdes
-4.Execution, 顺次执行Opcodes，每次一条，从而实现PHP脚本的功能。
-```
+
+>
+>1.Scanning(Lexing) ,将PHP代码转换为语言片段(Tokens)
+>
+>
+>2.Parsing, 将Tokens转换成简单而有意义的表达式
+>
+>3.Compilation, 将表达式编译成Opocdes
+>
+>4.Execution, 顺次执行Opcodes，每次一条，从而实现PHP脚本的功能。
+
 
 可以看出，如果缓存了opcode，就直接跳过了前面三步。
