@@ -2,7 +2,7 @@
 layout: post
 title:  "PHP编程原理之opcode"
 date:   2017-01-03 10:11:40 +0800
-categories: [normal]
+categories: [skill]
 excerpt: "PHP编程原理之opcode，今天只是了解了一点点。"
 tags:
   - PHP
