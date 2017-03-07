@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<head>
+    <style>
+        body {
+            background-color: #1d1f20;
+        }
+        .canvas-container {
+            margin: auto;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"/></script>
+<script>
+var canvas = document.getElementById('canvas');
+if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+}
+var lastTime;
+var bigbooms = [];
+
+window.onload = function(){
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    lastTime = new Date();
+    animate()
+}
+
+
+window.requestAnimFrame = function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(a){window.setTimeout(a,1000/60)}}();
+
+var animate = function() {
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = 0.1;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    newTime = new Date();
+    if (newTime - lastTime > 500 && bigbooms.length <50) {
+        var x = getRandom(canvas.width/8 , canvas.width*7/8);
+        var y = getRandom(0 , canvas.height/2);
+        var bigboom = new Boom(getRandom(canvas.width/3,canvas.width*2/3) , 2, "rgba("+getRandomInt(0, 255)+","+getRandomInt(0, 255)+","+getRandomInt(0, 255)+", 1)" , {x:x , y:y});
+        bigbooms.push(bigboom);
+        lastTime = newTime;
+    }
+
+    if (bigbooms) {
+        bigbooms.forEach(function(that,index){
+            if(!that.dead){
+                that._move();
+                that._drawLight();
+            } else {
+                if (that.booms) {
+                    var fragLive = 0;
+                    that.booms.forEach(function(frag){
+                        if(!frag.dead) {
+                            frag.moveTo();
+                            fragLive += 1;
+                        }
+                    });
+                    if (fragLive == 0) {
+                        bigbooms.splice(index , 1);
+                    }
+                }
+            }
+        });
+    }
+
+    requestAnimFrame(animate);
+}
+
+var Boom = function(x, r, c, to){
+    this.x = x;
+    this.y = canvas.height - r;
+    this.r = r;
+    this.c = c;
+    this.to = to;
+    this.dead = false;
+    this.booms = [];
+}
+Boom.prototype = {
+    _print:function() {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
+        ctx.fillStyle = this.c;
+        ctx.fill();
+        ctx.restore();
+    },
+    _move:function() {
+        var dx = this.to.x - this.x, dy = this.to.y - this.y;
+        this.x = Math.abs(dx) < 10 ? this.x : this.x + dx * 0.01;
+        this.y =  Math.abs(dy) < 10 ? this.y : this.y + dy * 0.01;
+        if (Math.abs(dx) <= 50 && Math.abs(dy) <= 80) {
+            this._boom();
+            this.dead = true;
+        } else {
+            this._print();
+        }
+    },
+    _drawLight:function(){
+        ctx.save();
+        ctx.fillStyle = "rgba(255,228,150,0.3)";
+        ctx.beginPath();
+        ctx.arc(this.x , this.y , this.r+3*Math.random()+1 , 0 , 2*Math.PI);
+        ctx.fill();
+        ctx.restore();
+    },
+    _boom:function() {
+        var fragNum = getRandom(100 , 300);
+
+        var fanwei = fragNum;
+        for(var i=0;i<fragNum;i++){
+            var color = "rgba("+getRandomInt(0, 255)+","+getRandomInt(0, 255)+","+getRandomInt(0, 255)+", 1)";
+            var a = getRandom(-Math.PI, Math.PI);
+            var x = getRandom(0, fanwei) * Math.cos(a) + this.x;
+            var y = getRandom(0, fanwei) * Math.sin(a) + this.y;
+            var radius = getRandom(0 , 2)
+            var frag = new Frag(this.x , this.y , radius , color , {x:x, y:y});
+            this.booms.push(frag);
+        }
+    }
+}
+
+var Frag = function(x, y, r, c, to) {
+    this.x = x;
+    this.y = y;
+    this.c = c;
+    this.r = r;
+    this.to = to;
+    this.dead = false;
+}
+Frag.prototype = {
+    paint:function(){
+        // ctx.beginPath();
+        // ctx.arc(this.x , this.y , this.radius , 0 , 2*Math.PI);
+        ctx.fillStyle = this.c;
+        ctx.fillRect(this.x-this.r , this.y-this.r , this.r*2 , this.r*2)
+    },
+    moveTo:function(){
+        this.to.y = this.to.y + 0.3;
+        var dx = this.to.x - this.x , dy = this.to.y - this.y;
+        this.x = Math.abs(dx)<0.1 ? this.to.x : (this.x+dx*0.1);
+        this.y = Math.abs(dy)<0.3 ? this.to.y : (this.y+dy*0.1);
+        if(dx===0 && Math.abs(dy)<=20){
+            goDead = getRandom(0, 100);
+            if (goDead > 95) {
+                this.dead = true;
+            }
+        }
+        this.paint();
+    }
+};
+
+canvas.onclick = function(){
+    var x = event.clientX;
+    var y = event.clientY;
+    var bigboom = new Boom(getRandom(canvas.width/3,canvas.width*2/3) ,2,"#FFF" , {x:x , y:y});
+    bigbooms.push(bigboom)
+}
+
+function getRandom(a , b){
+    return Math.random()*(b-a)+a;
+}
+function getRandomInt(a , b){
+    return parseInt(Math.random()*(b-a)+a);
+}
+</script>
+
+</body>
+</HTML>
